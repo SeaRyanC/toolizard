@@ -1,0 +1,22 @@
+{
+    "name": "Open Gifts",
+    "iterations": [20],
+    "steps": [
+        ["tap", "My Profile"],
+        ["tap", "Friends Header"],
+        ["tap", "Sort Order"],
+        ["tap", "Sort Order: Nickname"],
+        ["tap", "Sort Order"],
+        ["tap", "Sort Order: Gift"],
+        ["tap", "First Friend"],
+        ["mark"],
+        ["tap", "Gift Box"],
+        ["wait", "1500ms"],
+        ["tap", "Open Gift"],
+        ["wait", "1000ms"],
+        ["tap", "Close"],
+        ["swipe", "Friend XP Bar Right", "Friend XP Bar Left"],
+        ["loop"],
+        ["load"]
+    ]
+}

@@ -1,0 +1,6 @@
+{
+    "name": "Swipe Test",
+    "steps": [
+        ["swipe", "Friend XP Bar Right", "Friend XP Bar Left"]
+    ]
+}
