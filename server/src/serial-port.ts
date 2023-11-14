@@ -9,8 +9,6 @@ const initializationSequence: ReadonlyArray<string> = [
 ];
 
 export async function findPrinter(): Promise<string | null> {
-    if (1 + 1 === 2) return "COM4";
-
     const ports = await serialport.SerialPort.list();
     let result: string | null = null;
     for (const p of ports) {

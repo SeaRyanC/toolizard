@@ -4,7 +4,7 @@ import esbuild = require("esbuild");
 import path = require("node:path");
 import controller = require("./print-controller");
 import readline = require("readline");
-import { runScript, stop } from "./script-runner";
+import * as scriptRunner from "./script-runner";
 import { Script, Layout, ServerState, LearnCommand, RunCommand } from '../../common/src/types';
 
 readline.emitKeypressEvents(process.stdin);;
@@ -92,7 +92,7 @@ app.post("/move-to-position", async (req, res) => {
 });
 
 app.post("/stop", async (req, res) => {
-    stop();
+    scriptRunner.stop();
     res.send({});
 });
 
@@ -109,7 +109,7 @@ app.post("/run", async (req, res) => {
     if (info === "unknown") {
         await controller.home();
     }
-    runScript(script, layout);
+    scriptRunner.runScript(script, layout);
     res.send({});
 });
 

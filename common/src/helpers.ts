@@ -19,6 +19,22 @@ export function getStepDescription(step: ScriptStep) {
     }
 }
 
+export function getLocationsOfStep(step: ScriptStep): string[] {
+    switch(step[0]) {
+        case "tap":
+            return [step[1]];
+        case "swipe":
+            return [step[1], step[2]];
+        case "wait":
+        case "load":
+        case "mark":
+        case "loop":
+            return [];
+        default:
+            assertNever(step[0], "Unknown step")
+    }
+}
+
 function assertNever(n: never, err: string): never {
     throw new Error(`${err}; expected not to see value ${n}`);
 }

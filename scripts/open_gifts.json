@@ -11,7 +11,7 @@
         ["tap", "First Friend"],
         ["mark"],
         ["tap", "Gift Box"],
-        ["wait", "1500ms"],
+        ["wait", "3000ms"],
         ["tap", "Open Gift"],
         ["wait", "1000ms"],
         ["tap", "Close"],

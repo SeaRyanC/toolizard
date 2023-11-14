@@ -88,7 +88,22 @@ div.learner {
     flex-shrink: 1;
 }
 
-table.learner {
+table {
+    flex-grow: 1;
+}
+
+button.control-button {
+    font-size: 200%;
+}
+
+div.row.controller {
+    justify-content: space-around;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+td.unlocated {
+    background: #F88;
 }
 
 @media (orientation: portrait) {
