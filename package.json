@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc -p server && node server/dist/server.js"
+    "build": "tsc -b -f",
+    "start": "tsc -b -f && node server/dist/server.js"
   },
   "keywords": [],
   "author": "",
