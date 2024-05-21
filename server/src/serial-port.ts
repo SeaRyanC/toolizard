@@ -11,10 +11,10 @@ const initializationSequence: ReadonlyArray<string> = [
 export async function findPrinter(): Promise<string | null> {
     const ports = await serialport.SerialPort.list();
     let result: string | null = null;
-    for (const p of ports) {
+    for (const p of ports.filter(p => p.path === process.env["PORT_NAME"])) {
         console.log(p);
         try {
-            const port = new serialport.SerialPort({ path: p.path, baudRate: 115200 });
+            const port = new serialport.SerialPort({ path: p.path, baudRate: 115200, hupcl: true });
             let foundIt: (value: unknown) => void;
             const foundItPromise = new Promise(res => foundIt = res);
             port.on("data", data => {
