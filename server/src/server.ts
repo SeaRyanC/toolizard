@@ -59,8 +59,9 @@ app.post("/learn", async (req, res) => {
     console.log(cmd);
     const layout = (await getLayouts()).filter(b => b.name === cmd.layout)[0];
     console.log(layout);
-    layout.positions[cmd.position] = { x: cmd.x, y: cmd.y };
+    layout.positions[cmd.side][cmd.position] = { x: cmd.x, y: cmd.y };
     writeLayout(layout);
+    console.log("Done learning");
 });
 
 app.post("/tap", async (req, res) => {
@@ -87,6 +88,10 @@ app.post("/move-relative", async (req, res) => {
     res.send({ result: await controller.moveRelative(req.body) });
 });
 
+app.post("/extrude", async (req, res) => {
+    res.send({ result: await controller.extrude(req.body) });
+});
+
 app.post("/move-to-position", async (req, res) => {
     res.send({ result: await controller.moveToPosition(req.body) });
 });
@@ -104,12 +109,14 @@ app.post("/load", async (req, res) => {
 app.post("/run", async (req, res) => {
     const cmd: RunCommand = req.body;
     const script = (await getScripts()).filter(s => s.name === cmd.script)[0];
-    const layout = (await getLayouts()).filter(s => s.name === cmd.layout)[0];
+    const layoutLeft = (await getLayouts()).filter(s => s.name === cmd.layoutLeft)[0];
+    const layoutRight = (await getLayouts()).filter(s => s.name === cmd.layoutRight)[0];
     const info = await controller.getPosition();
     if (info === "unknown") {
         await controller.home();
     }
-    scriptRunner.runScript(script, layout);
+    debugger;
+    scriptRunner.runScript(script, layoutLeft, layoutRight);
     res.send({});
 });
 

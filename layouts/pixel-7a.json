@@ -1,0 +1,53 @@
+{
+  "name": "Pixel 7a",
+  "positions": {
+    "left": {
+      "My Profile": {
+        "x": 70,
+        "y": 28
+      },
+      "Friends Header": {
+        "x": 93,
+        "y": 136
+      },
+      "Sort Order": {
+        "x": 116,
+        "y": 26
+      },
+      "Sort Order: Nickname": {
+        "x": 116,
+        "y": 71
+      },
+      "Sort Order: Gift": {
+        "x": 116,
+        "y": 49
+      },
+      "First Friend": {
+        "x": 94,
+        "y": 99
+      },
+      "Gift Box": {
+        "x": 94,
+        "y": 80
+      },
+      "Open Gift": {
+        "x": 94,
+        "y": 36
+      },
+      "XP Bar Left": {
+        "x": 70,
+        "y": 66
+      },
+      "XP Bar Right": {
+        "x": 116,
+        "y": 66
+      },
+      "Close": {
+        "x": 93,
+        "y": 26
+      }
+    },
+    "right": {}
+  },
+  "_filename": null
+}

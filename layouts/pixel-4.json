@@ -1,0 +1,53 @@
+{
+  "name": "Pixel 4",
+  "positions": {
+    "left": {
+      "My Profile": {
+        "x": 71,
+        "y": 30
+      },
+      "Friends Header": {
+        "x": 92,
+        "y": 128
+      },
+      "Sort Order": {
+        "x": 116,
+        "y": 28
+      },
+      "Sort Order: Nickname": {
+        "x": 114,
+        "y": 72
+      },
+      "Sort Order: Gift": {
+        "x": 114,
+        "y": 50
+      },
+      "First Friend": {
+        "x": 94,
+        "y": 95
+      },
+      "XP Bar Right": {
+        "x": 117,
+        "y": 62
+      },
+      "XP Bar Left": {
+        "x": 77,
+        "y": 62
+      },
+      "Gift Box": {
+        "x": 94,
+        "y": 74
+      },
+      "Open Gift": {
+        "x": 94,
+        "y": 38
+      },
+      "Close": {
+        "x": 94,
+        "y": 27
+      }
+    },
+    "right": {}
+  },
+  "_filename": null
+}

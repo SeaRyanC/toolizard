@@ -1,99 +1,132 @@
 import * as React from 'preact';
-import { useCallback } from "preact/hooks";
+import { useCallback, useState } from "preact/hooks";
 import type { AppProps } from ".";
 import { ServerState, LearnCommand, Script } from '../../common/src/types';
 import { Joystick } from './joystick';
 import { LayoutList } from './layout-list';
 import { ScriptList } from './script-list';
+import { JSX } from 'preact';
 
 export function LearnController(props: AppProps) {
-    return <>
-        <div class="row">
-            <ScriptList {...props} />
-            <LayoutList {...props} />
-        </div>
-        <Joystick {...props} />
-        <Learner {...props} />
-    </>;
-}
-
-function Learner(props: AppProps) {
-    const layout = props.layouts[props.selectedLayoutIndex];
+    const [index, setIndex] = useState(0);
     const script = props.scripts[props.selectedScriptIndex];
-    if (!layout || !script) return <></>;
 
-    // Sort unknown positions first
-    const positions = getPositionNames(script);
-    positions.sort((a, b) => {
-        return +(a in layout.positions) - +(b in layout.positions);
-    });
-
-    return <div class="learner"><table class="learner">
-        {...positions.map(pos => {
-            let x = layout.positions[pos]?.x ?? "?";
-            let y = layout.positions[pos]?.y ?? "?";
-            return <tr>
-                <td>{pos}</td>
-                <td className="position">{x}</td>
-                <td className="position">{y}</td>
-                <td><button className="learn" onClick={save}>💾</button></td>
-                <td><button className="goto" onClick={go_to}>👉</button></td>
-            </tr>;
-
-            async function save() {
-                const status: ServerState = await (await fetch("./status.json")).json();
-                layout.positions[pos] = { x: status.x, y: status.y };
-                const command: LearnCommand = {
-                    layout: layout.name,
-                    position: pos,
-                    x: status.x,
-                    y: status.y
-                };
-                fetch("/learn", {
-                    method: "POST",
-                    body: JSON.stringify(command),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-            }
-
-            async function go_to() {
-                await fetch("/move-to-position", {
-                    method: "POST",
-                    body: JSON.stringify({ x, y }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-            }
-        })}
-    </table></div>;
-}
-
-function getPositionNames(script: Script) {
-    const positions: string[] = [];
-    for (const step of script.steps) {
-        switch (step[0]) {
-            case "swipe":
-                add(step[1], step[2]);
-                break;
-            case "tap":
-                add(step[1]);
-                break;
-            case "loop":
-            case "mark":
-            case "wait":
-                break;
+    const rows: (readonly [string, "left" | "right"])[] = [];
+    for (const p of script.steps) {
+        const command = p[0];
+        if (command === "tap") {
+            const location = p[1];
+            const side = p[2] ?? props.selectedSingleSide;
+            rows.push([location, side]);
+        } else if (command === "swipe") {
+            const side = p[3] ?? props.selectedSingleSide;
+            rows.push([p[1], side]);
+            rows.push([p[2], side]);
+        } else {
+            command satisfies "wait" | "mark" | "loop" | "load";
+            continue;
         }
     }
-    return positions;
 
-    function add(...pos: string[]) {
-        for (const p of pos) {
-            if (positions.indexOf(p) >= 0) continue;
-            positions.push(p);
-        }
-    }
+    const currentTarget = rows[index];
+    const currentTargetName = rows[index][0];
+    const currentSide = rows[index][1];
+    const currentLayoutIndex = currentTarget[1] === "left" ? props.selectedLayoutIndexLeft : props.selectedLayoutIndexRight;
+    const currentLayout = props.layouts[currentLayoutIndex];
+    const currentPos = props.layouts[currentLayoutIndex].positions[currentTarget[1]][currentTarget[0]];
+
+    const nextStep = useCallback(() => {
+        setIndex((index + 1) % rows.length);
+    }, [props, index]);
+    const prevStep = useCallback(() => {
+        setIndex((index - 1 + rows.length) % rows.length);
+    }, [props, index]);
+    const save = useCallback(async () => {
+        const status: ServerState = await (await fetch("./status.json")).json();
+        const pos = { x: status.x, y: status.y };
+        // Remote machine not actually connected, bail
+        if (pos.x === -1 && pos.y === -1) return;
+        
+        // Update local copy
+        currentLayout.positions[currentSide][currentTargetName] = pos;
+
+        // Save on remote server
+        const command: LearnCommand = {
+            layout: currentLayout.name,
+            side: currentSide,
+            position: currentTargetName,
+            x: pos.x,
+            y: pos.y
+        };
+        fetch("/learn", {
+            method: "POST",
+            body: JSON.stringify(command),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }, [props, currentSide, currentTargetName, currentPos]);
+
+
+    return <div class="learn-controller">
+        <Learner {...props} learnIndex={index} rows={rows} />
+        <div class="learner-right-side">
+            <Joystick {...props} />
+            <div class="learn-target">
+                <div><b>Target:</b> {rows[index][0]}</div>
+                <div><b>Side:</b> {rows[index][1]}</div>
+                <div><b>Current:</b> {currentPos ? `${currentPos.x}, ${currentPos.y}` : "(none)"}</div>
+            </div>
+            <div class="horizontal-layout learner-toolbar">
+                <button onClick={prevStep}>Prev</button>
+                <button onClick={save}>Save</button>
+                <button onClick={nextStep}>Next</button>
+            </div>
+        </div>
+    </div>;
 }
 
+function Learner(props: AppProps & { learnIndex: number, rows: (readonly [string, string])[] }) {
+    const script = props.scripts[props.selectedScriptIndex];
+    if (!script) return <></>;
+
+    const hasLeftDevice = script.devices === 2 || props.selectedSingleSide === "left";
+    const hasRightDevice = script.devices === 2 || props.selectedSingleSide === "right";
+
+    const leftLayout = props.layouts[props.selectedLayoutIndexLeft];
+    const rightLayout = props.layouts[props.selectedLayoutIndexRight];
+
+    const { rows } = props;
+
+    return <div class="learner-left-side">
+        {hasLeftDevice ? <div class="target-device"><b>Device (left):</b> {leftLayout.name}</div> : null}
+        {hasRightDevice ? <div class="target-device"><b>Device (right):</b> {rightLayout.name}</div> : null}
+        <div class="script-to-learn"><b>Learning Script:</b> {script.name}</div>
+        <table class="positions-to-learn">
+            {...rows.map(getRow)}
+        </table>
+    </div>;
+
+    function getRow(arg: readonly [name: string, side: string], index: number) {
+        const [name, side] = arg;
+        const selectionGlyph = props.learnIndex === index ? "→" : "";
+        const displaySide = props.scripts[props.selectedScriptIndex].devices === 2 ? side : "";
+        return <tr>
+            <td>{selectionGlyph}</td>
+            <td>{name}</td>
+            <td>{displaySide}</td>
+        </tr>;
+    }
+
+    async function go_to() {
+        /*
+        await fetch("/move-to-position", {
+            method: "POST",
+            body: JSON.stringify({ x, y }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        */
+    }
+}

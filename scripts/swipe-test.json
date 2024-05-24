@@ -1,6 +1,16 @@
 {
     "name": "Swipe Test",
+    "devices": 1,
     "steps": [
-        ["swipe", "Friend XP Bar Right", "Friend XP Bar Left"]
+        ["tap", "XP Bar Right"],
+        ["tap", "XP Bar Right"],
+        ["swipe", "XP Bar Right", "XP Bar Left"],
+        ["tap", "XP Bar Right"],
+        ["swipe", "XP Bar Right", "XP Bar Left"],
+        ["swipe", "XP Bar Right", "XP Bar Left"],
+        ["swipe", "XP Bar Right", "XP Bar Left"],
+        ["swipe", "XP Bar Right", "XP Bar Left"],
+        ["swipe", "XP Bar Right", "XP Bar Left"],
+        ["swipe", "XP Bar Right", "XP Bar Left"]
     ]
 }

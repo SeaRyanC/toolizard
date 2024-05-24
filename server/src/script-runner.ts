@@ -1,3 +1,4 @@
+import { fail } from 'assert';
 import { Script, Layout, ServerState, ScriptRunnerStatus } from '../../common/src/types';
 import * as pc from "./print-controller";
 
@@ -13,7 +14,10 @@ let running = false;
 let nextActionTime = 0;
 
 let script: Script;
-let layout: Layout;
+let layouts = {
+    left: undefined as Layout | undefined,
+    right: undefined as Layout | undefined
+}
 
 export function stop() {
     shouldStop = true;
@@ -50,12 +54,15 @@ export function getStatus(): ScriptRunnerStatus {
     } as const;
 }
 
-export function runScript(_script: Script, _layout: Layout) {
+export function runScript(_script: Script, _layoutLeft: Layout | undefined, _layoutRight: Layout | undefined) {
     script = _script;
-    layout = _layout;
-    iterations = script.iterations?.[0] || 1;
+    layouts = {
+        left: _layoutLeft,
+        right: _layoutRight
+    };
+    iterations = script.iterations ?? 1;
 
-    console.log(`Running ${script.name} on ${layout.name} for ${iterations} iterations...`);
+    console.log(`Running ${script.name} for ${iterations} iterations...`);
     
     markIndex = NaN;
     stepIndex = 0;
@@ -94,7 +101,7 @@ async function runNextStep() {
     const step = script.steps[stepIndex];
     switch(step[0]) {
         case "tap":
-            const location = getPosition(step[1]);
+            const location = getPosition(step[1], step[2]);
             await pc.moveToPosition(location);
             await pc.finishMoves();
             await waitForSleep();
@@ -102,8 +109,8 @@ async function runNextStep() {
             await pc.finishMoves();
             break;
         case "swipe":
-            const start = getPosition(step[1]);
-            const end = getPosition(step[2]);
+            const start = getPosition(step[1], step[3]);
+            const end = getPosition(step[2], step[3]);
             await pc.moveToPosition(start);
             await pc.finishMoves();
             await waitForSleep();
@@ -140,14 +147,44 @@ async function runNextStep() {
 }
 
 function parseTime(s: string): number {
-    if (/\d+ms/.test(s)) {
-        return +(/(\d+)ms/.exec(s)![1]);
+    // 5000ms
+    const msRegex = /^(\d)+ms$/i;
+    if (msRegex.test(s)) {
+        const ms = +(msRegex.exec(s)![1]);
+        return ms;
+    }
+    // 4s
+    const sRegex = /^(\d+)s$/i;
+    if (sRegex.test(s)) {
+        const ms = +(msRegex.exec(s)![1]) * 1000;
+        return ms;
     }
     throw new Error("Invalid time spec");
 }
 
-function getPosition(name: string) {
-    return layout.positions[name];
+function getPosition(name: string, side: "left" | "right" | undefined) {
+    const result = worker();
+    if (result === undefined) {
+        return fail(`Failed to load position '${name}' from side ${side}`);
+    }
+    return result;
+
+    function worker() {
+        if (side === undefined) {
+            if (layouts.left) {
+                return layouts.left.positions.left[name];
+            }
+            if (layouts.right) {
+                return layouts.right.positions.right[name];
+            }
+            return fail(`At least one layout must exist`);
+        }
+        const layout = layouts[side];
+        if (!layout) {
+            return fail(`Selected side does not exist`);
+        }
+        return layout.positions[side][name];
+    }
 }
 
 function nowInMilliseconds() {

@@ -62,11 +62,14 @@ export async function moveToPosition(json: { x?: number, y?: number, z?: number,
         return { kind: "error", error: "Initiate 'home' first" };
     }
 
+    // Use absolute positioning
+    await doCommands(`G90`);
     if ("e" in json) {
+        // Except extruder - always relative
         await doCommands(`M83`);
     }
 
-    const parts = ["G0"];
+    const parts = [`G0`];
     if ("x" in json) {
         x = json.x;
         parts.push(`X${json.x}`);
@@ -77,14 +80,14 @@ export async function moveToPosition(json: { x?: number, y?: number, z?: number,
     }
     if ("z" in json) {
         z = json.z;
-        parts.push(`X${json.x}`);
+        parts.push(`Z${json.z}`);
     }
     if ("e" in json) {
         parts.push(`E${json.e}`);
     }
     parts.push(`F2500`);
 
-    return await doCommands(`G90`, parts.join(" ") + "\n");
+    return await doCommands(parts.join(" ") + "\n");
 }
 
 export async function moveAbsolute(json: { axis: string, position: number }) {
@@ -122,6 +125,10 @@ export async function moveRelative(json: { axis: string, distance: number }) {
     }
 
     return await doCommands(`G91`, `G0 ${json.axis.toUpperCase()}${json.distance}`);
+}
+
+export async function extrude(json: { distance: number }) {
+    return await doCommands(`G91`, `G0 E${json.distance}`);
 }
 
 export async function info() {

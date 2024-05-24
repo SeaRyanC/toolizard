@@ -1,16 +1,9 @@
 {
-    "name": "Open Gifts",
+    "name": "Open Gifts (At Gift)",
     "initialState": "World Map",
     "devices": 1,
     "iterations": 20,
     "steps": [
-        ["tap", "My Profile"],
-        ["tap", "Friends Header"],
-        ["tap", "Sort Order"],
-        ["tap", "Sort Order: Nickname"],
-        ["tap", "Sort Order"],
-        ["tap", "Sort Order: Gift"],
-        ["tap", "First Friend"],
         ["mark"],
         ["tap", "Gift Box"],
         ["wait", "3000ms"],

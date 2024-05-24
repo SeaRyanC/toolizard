@@ -1,22 +1,24 @@
 {
     "name": "Trade",
-    "iterations": [100],
+    "initialState": "Friends' profile screens",
+    "devices": 2,
+    "iterations": 100,
     "steps": [
         ["mark"],
-        ["tap", "Trade (left)"],
-        ["tap", "Trade (right)"],
+        ["tap", "Trade", "left"],
+        ["tap", "Trade", "right"],
         ["wait", "5000ms"],
-        ["tap", "First Pokemon (right)"],
-        ["tap", "Next (right)"],
-        ["tap", "First Pokemon (left)"],
-        ["tap", "Next (left)"],
+        ["tap", "First Pokemon", "right"],
+        ["tap", "Next", "right"],
+        ["tap", "First Pokemon", "left"],
+        ["tap", "Next", "left"],
         ["wait", "1000ms"],
-        ["tap", "Confirm (left)"],
-        ["tap", "Confirm (right)"],
+        ["tap", "Confirm", "left"],
+        ["tap", "Confirm", "right"],
         ["wait", "14000ms"],
-        ["tap", "Close (right)"],
-        ["tap", "Close (left)"],
+        ["tap", "Close", "right"],
+        ["tap", "Close", "left"],
         ["loop"],
-        ["load"]        
+        ["load"]
     ]
 }

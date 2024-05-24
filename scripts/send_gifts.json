@@ -1,13 +1,15 @@
 {
     "name": "Send Gifts",
-    "iterations": [20],
+    "initialState": "World Map",
+    "devices": 1,
+    "iterations": 20,
     "steps": [
         ["tap", "My Profile"],
         ["tap", "Friends Header"],
         ["tap", "Sort Order"],
         ["tap", "Sort Order: Nickname"],
         ["tap", "Sort Order"],
-        ["tap", "Sort Order: Can Receive"],
+        ["tap", "Sort Order: Can Receive Gift"],
         ["tap", "First Friend"],
         ["mark"],
         ["wait", "500ms"],
@@ -19,7 +21,7 @@
         ["tap", "First Gift"],
         ["tap", "Send"],
         ["wait", "5500ms"],
-        ["swipe", "Friend XP Bar Right", "Friend XP Bar Left"],
+        ["swipe", "XP Bar Right", "XP Bar Left"],
         ["loop"],
         ["load"]        
     ]

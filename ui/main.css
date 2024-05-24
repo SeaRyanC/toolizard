@@ -1,18 +1,43 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #000;
+}
+
+div {
+    cursor: default;
 }
 
 div#app {
+    width: 900px;
+    height: 500px;
+    border: solid #009 3px;
+    border-radius: 25px;
+
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 
     position: absolute;
-    left: 0px;
-    right: 0px;
-    top: 0px;
-    bottom: 0px;
-    padding-left: 5px;
-    padding-right: 5px;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+
+    background: white;
+
+    overflow: hidden;
+}
+
+/* Navigational 'tab' selector */
+div.tab-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    background: #555;
+}
+
+div.tab-body {
+    padding-left: 1em;
+    width: 100%;
 }
 
 .critical {
@@ -23,10 +48,36 @@ h1 {
     font-size: 110%;
 }
 
+table.joystick {
+    width: fit-content;
+}
+
+table.joystick td, table.joystick tr {
+    width: auto;
+    height: auto;
+    text-align: center;
+}
+
 .joystick button {
-    width: 3em;
-    height: 3em;
-    margin: 0.2em;
+    width: 4em;
+    height: 4em;
+}
+
+.joystick button.small {
+    width: 2.5em;
+    height: 2.5em;
+}
+
+div.script-input-selector {
+    display: flex;
+    width: 100%;
+    min-height: 0;
+    flex-direction: column;
+}
+
+div.script-options {
+    display: flex;
+    flex-direction: row;
 }
 
 div.script-list, div.layout-list {
@@ -44,8 +95,27 @@ div.selected {
     background-color: #8F8;
 }
 
-.learner tr {
-    height: 2.5em;
+div.script-step-list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    width: 100%;
+    min-height: 0;
+}
+
+div.script-step span.unlocated {
+    text-decoration: underline;
+    text-decoration-color: red;
+}
+
+div.learn-controller {
+    height: 100%;
+}
+
+div.learner {
+    height: 100%;
+    overflow-y: scroll;
 }
 
 .learner td.position {
@@ -54,17 +124,12 @@ div.selected {
 }
 
 .learner button {
-    margin: 0.5em;
+    margin: 0.25em;
     font-size: 120%;
 }
 
 div.row {
     display: flex;
-}
-
-div.tab-list {
-    display: flex;
-    justify-content: space-around;
 }
 
 span.tab-item {
@@ -74,13 +139,21 @@ span.tab-item {
     font-size: 110%;
     border: solid transparent 2px;
     border-radius: 10px;
-    padding: 5px;
+    margin-left: 0.4em;
+    padding-bottom: 15px;
+    padding-top: 15px;
+    margin-right: 12px;
+    background: black;
+    color: white;
 }
 
 span.tab-item.selected {
-    border: solid black 2px;
-    border-radius: 10px;
-    padding: 5px;
+    background: white;
+    color: black;
+    border: solid #555 2px;
+    border-right: none;
+    border-radius: 10px 0 0 10px;
+    margin-right: 0px;
 }
 
 div.learner {
@@ -88,28 +161,84 @@ div.learner {
     flex-shrink: 1;
 }
 
-table {
-    flex-grow: 1;
+div.controller {
+    padding-left: 0.4em;
+    padding-right: 0.4em;
 }
 
 button.control-button {
-    font-size: 200%;
+    background: #DDD;
+    border-radius: 1em;
+    text-align: left;
+    width: 7em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 1em;
+    font-size: 150%;
 }
 
-div.row.controller {
+div.controller {
+    display: flex;
+    flex-direction: column;
     justify-content: space-around;
-    padding-top: 0.3em;
-    padding-bottom: 0.3em;
+    align-items: center;
+    height: 100%;
 }
 
 td.unlocated {
     background: #F88;
 }
 
-@media (orientation: portrait) {
-    div.tab-list {
-        margin-top: auto;
-        padding-bottom: 3px;
-        order: 99;
-    }
+div.horizontal-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+div.full-height {
+    height: 100%;
+}
+
+div.vertical-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+div.learn-controller {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-right: 2em;
+}
+
+div.learner-left-side {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+div.learner-right-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-bottom: 1em;
+}
+
+div.learn-target {
+    width: 18em;
+    height: 5em;
+    word-wrap: normal;
+}
+
+table.positions-to-learn td {
+    padding-left: 1em;
+}
+
+div.learner-toolbar button {
+    width: 6em;
+    height: 2em;
 }

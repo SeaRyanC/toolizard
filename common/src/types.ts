@@ -1,6 +1,8 @@
 export interface Script {
     name: string;
-    iterations?: number[];
+    initialState: string;
+    devices: 1 | 2;
+    iterations?: number;
     steps: ReadonlyArray<ScriptStep>;
 }
 
@@ -12,18 +14,18 @@ export type ScriptRunnerStatus =
     ;
 
 export type ScriptStep =
-    | [cmd: "tap", location: string]
-    | [cmd: "swipe", from: string, to: string]
+    | [cmd: "tap", location: string, side?: "left" | "right"]
+    | [cmd: "swipe", from: string, to: string, side?: "left" | "right"]
     | [cmd: "wait", timeSpec: string]
-    | [cmd: "load"]
     | [cmd: "mark"]
     | [cmd: "loop"]
+    | [cmd: "load"]
     ;
 
 export interface Layout {
     _filename: string;
     name: string;
-    positions: Record<string, { x: number, y: number }>;
+    positions: Record<"left" | "right", Record<string, { x: number, y: number }>>;
 }
 
 export interface ServerStatusReport {
@@ -41,6 +43,7 @@ export interface ServerState {
 
 export interface LearnCommand {
     layout: string;
+    side: "left" | "right";
     position: string;
     x: number;
     y: number;
@@ -48,6 +51,6 @@ export interface LearnCommand {
 
 export interface RunCommand {
     script: string;
-    layout: string;
-    count: number;
+    layoutLeft: string | undefined;
+    layoutRight: string | undefined;
 }

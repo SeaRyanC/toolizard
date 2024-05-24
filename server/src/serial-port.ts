@@ -1,5 +1,7 @@
 import serialport = require("serialport");
 
+const { ReadlineParser } = serialport;
+
 const initializationSequence: ReadonlyArray<string> = [
     "M107", // Fan off
     "M302 P1", // Cold extrude OK
@@ -10,11 +12,20 @@ const initializationSequence: ReadonlyArray<string> = [
 
 export async function findPrinter(): Promise<string | null> {
     const ports = await serialport.SerialPort.list();
+    console.log(`Found serial ports: ${ports.map(p => p.path).join(", ")}`);
     let result: string | null = null;
     for (const p of ports.filter(p => p.path === process.env["PORT_NAME"])) {
-        console.log(p);
+        console.log(`Try to open ${p.path}`);
         try {
             const port = new serialport.SerialPort({ path: p.path, baudRate: 115200, hupcl: true });
+            const parser = new ReadlineParser();
+            port.pipe(parser);
+
+            parser.on("data", (data: string) => {
+                console.log(`Response from ${p.path}: ${data}`);
+                foundIt(undefined);
+            });
+
             let foundIt: (value: unknown) => void;
             const foundItPromise = new Promise(res => foundIt = res);
             port.on("data", data => {
@@ -25,13 +36,18 @@ export async function findPrinter(): Promise<string | null> {
                 }
             });
             // "Finish moves" (no-op for idle printer)
-            port.write("M400\n");
-            await Promise.race([wait(500), foundItPromise])
-            port.close();
+            port.write('M400\n');
+
+            // See what happens first
+            await Promise.race([wait(500), foundItPromise]);
+
+            // Close since we'll re-open
+            await promisify(port, "close");
         } catch (e) {
             console.log(e);
         }
     }
+    console.log(`Succeeded at ${result}`);
     return result;
 }
 
@@ -133,3 +149,11 @@ async function main() {
 
 // main();
 
+function promisify<T, K extends keyof T>(obj: T, key: T[K]): Promise<void>;
+function promisify(obj: any, key: string) {
+    return new Promise<void>(resolve => {
+        obj[key](() => {
+            resolve();
+        })
+    });
+}

@@ -1,6 +1,6 @@
 import * as React from 'preact';
 import { useState, useCallback, useEffect, useMemo } from 'preact/hooks';
-import type { Script, Layout, ServerState, LearnCommand } from '../../common/src/types';
+import type { Script, Layout, ServerState, LearnCommand, RunCommand } from '../../common/src/types';
 import { getStepDescription } from '../../common/src/helpers';
 import { ScriptList } from './script-list';
 import { LayoutList } from './layout-list';
@@ -28,7 +28,9 @@ export type AppProps = {
     lastResult: any;
     scripts: Script[];
     layouts: Layout[];
-    selectedLayoutIndex: number;
+    selectedSingleSide: "left" | "right";
+    selectedLayoutIndexLeft: number;
+    selectedLayoutIndexRight: number;
     selectedScriptIndex: number;
 
     learnSelected: boolean;
@@ -41,12 +43,13 @@ let appProps: AppProps = {
     lastResult: "",
     layouts: [],
     scripts: [],
-    selectedLayoutIndex: 0,
+    selectedSingleSide: "left",
+    selectedLayoutIndexLeft: 0,
+    selectedLayoutIndexRight: 0,
     selectedScriptIndex: 0,
     learnSelected: true,
     events: {
         tap: async () => {
-            // tap
             const result = await fetch("/tap", { method: "POST" });
             appProps = { ...appProps, lastResult: (await result.json()).toString() };
             render();
@@ -59,6 +62,14 @@ let appProps: AppProps = {
         home: async () => {
             const result = await fetch("/motors-home", { method: "POST" });
             appProps = { ...appProps, lastResult: (await result.json()).toString() };
+
+            await fetch("/move-to-position", {
+                method: "POST",
+                body: JSON.stringify({ x: 130, y: 90 }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
             render();
         },
         info: async () => {
@@ -77,11 +88,24 @@ let appProps: AppProps = {
             render();
         },
         runScript: async () => {
-            const script = appProps.scripts[appProps.selectedScriptIndex].name;
-            const layout = appProps.layouts[appProps.selectedLayoutIndex].name;
+            const script = appProps.scripts[appProps.selectedScriptIndex];
+            let layoutLeft: string | undefined = undefined;
+            let layoutRight: string | undefined = undefined;
+            if ((script.devices == 2) || (appProps.selectedSingleSide === "left")) {
+                layoutLeft = appProps.layouts[appProps.selectedLayoutIndexLeft].name;
+            }
+            if ((script.devices == 2) || (appProps.selectedSingleSide === "right")) {
+                layoutRight = appProps.layouts[appProps.selectedLayoutIndexRight].name;
+            }
+
+            const command: RunCommand = {
+                script: script.name,
+                layoutLeft,
+                layoutRight
+            };
             fetch("/run", {
                 method: "POST",
-                body: JSON.stringify({ script, layout }),
+                body: JSON.stringify(command),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -100,6 +124,11 @@ let appProps: AppProps = {
             fetch("/load", { method: "POST" });
         },
         refresh: () => {
+            fetch("./status.json").then(async res => {
+                const serverState = await res.json();
+                appProps = { ...appProps, serverState };
+                render();
+            });
         },
         stop: () => {
             fetch("/stop", { method: "POST" });
@@ -107,15 +136,24 @@ let appProps: AppProps = {
     }
 };
 
+const InitFlags = {
+    scripts: 1 << 0,
+    layouts: 1 << 1,
+    all: 0b11
+} as const;
+let initFlagsState = 0;
+
 fetch("./scripts.json").then(async res => {
     const scripts = await res.json();
     appProps = { ...appProps, scripts };
+    initFlagsState |= InitFlags.scripts;
     render();
 });
 
 fetch("./layouts.json").then(async res => {
     const layouts = await res.json();
     appProps = { ...appProps, layouts };
+    initFlagsState |= InitFlags.layouts;
     render();
 });
 
@@ -132,17 +170,19 @@ function App(props: AppProps) {
             <span class={classNames({ "tab-item": true, "selected": props.activeTab === "script" })} onClick={useCurryUpdateProp("activeTab", "script")}>Script</span>
             <span class={classNames({ "tab-item": true, "selected": props.activeTab === "learn" })} onClick={useCurryUpdateProp("activeTab", "learn")}>Learn</span>
         </div>
-        <If lhs="control" rhs={props.activeTab}>
-            <Joystick {...props} />
-        </If>
-        <If lhs="script" rhs={props.activeTab}>
-            <ScriptController {...props} />
-        </If>
-        <If lhs="learn" rhs={props.activeTab}>
-            <LearnController {...props} />
-        </If>
-
-        <StatusBar status={props.lastResult} />
+        <div class="tab-body">
+            <If lhs="control" rhs={props.activeTab}>
+                <div class="controller">
+                    <Joystick {...props} />
+                </div>
+            </If>
+            <If lhs="script" rhs={props.activeTab}>
+                <ScriptController {...props} />
+            </If>
+            <If lhs="learn" rhs={props.activeTab}>
+                <LearnController {...props} />
+            </If>
+        </div>
     </>;
 }
 
@@ -166,7 +206,7 @@ export function useCurryUpdateProp<K extends keyof AppProps>(key: K, value: AppP
 }
 
 function getPersistedProps() {
-    const PersistedPropsKeys: readonly (keyof AppProps)[] = ["activeTab", "selectedLayoutIndex", "selectedScriptIndex"];
+    const PersistedPropsKeys: readonly (keyof AppProps)[] = ["activeTab", "selectedLayoutIndexLeft", "selectedLayoutIndexRight", "selectedScriptIndex"];
     return Object.fromEntries(Object.entries(appProps).filter(([key]) => PersistedPropsKeys.includes(key as any)));
 }
 
@@ -187,6 +227,7 @@ export function updateProp<K extends keyof AppProps>(key: K, value: AppProps[K])
 }
 
 function render() {
+    if (initFlagsState !== InitFlags.all) return;
     React.render(<App {...appProps} />, document.getElementById("app")!);
 }
 
