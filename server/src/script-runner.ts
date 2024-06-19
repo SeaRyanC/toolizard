@@ -60,7 +60,7 @@ export function runScript(_script: Script, _layoutLeft: Layout | undefined, _lay
         left: _layoutLeft,
         right: _layoutRight
     };
-    iterations = script.iterations ?? 1;
+    iterations = script.iterations?.[0] ?? 1;
 
     console.log(`Running ${script.name} for ${iterations} iterations...`);
     
@@ -148,7 +148,7 @@ async function runNextStep() {
 
 function parseTime(s: string): number {
     // 5000ms
-    const msRegex = /^(\d)+ms$/i;
+    const msRegex = /^(\d+)ms$/i;
     if (msRegex.test(s)) {
         const ms = +(msRegex.exec(s)![1]);
         return ms;

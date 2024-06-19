@@ -37,7 +37,7 @@ async function doCommands(...s: string[]): Promise<CommandResult> {
 }
 
 export function tap() {
-    return doCommands(`M83`, "G0 E2", "G0 E-2");
+    return doCommands(`M83`, "G0 E3", "G0 E-3");
 }
 
 export async function home() {
@@ -139,8 +139,8 @@ export async function swipe(start: { x: number; y: number; }, end: { x: number; 
     const midX = Math.round(start.x / 2 + end.x / 2);
     const midY = Math.round(start.y / 2 + end.y / 2);
     await moveToPosition(start);
-    await moveToPosition({ x: midX, y: midY, e: 3 });
-    await moveToPosition({ ...end, e: -3 });
+    await moveToPosition({ x: midX, y: midY, e: 4 });
+    await moveToPosition({ ...end, e: -4 });
 }
 
 export async function load() {

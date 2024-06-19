@@ -1,0 +1,26 @@
+{
+    "name": "Open Gifts (2)",
+    "initialState": "Gift Pages",
+    "devices": 2,
+    "iterations": [30],
+    "steps": [
+        ["mark"],
+
+        ["tap", "Gift Box", "left"],
+        ["tap", "Gift Box", "right"],
+
+        ["tap", "Open Gift", "left"],
+        ["wait", "1300ms"],
+        ["tap", "Close", "left"],
+
+        ["tap", "Open Gift", "right"],
+        ["wait", "1300ms"],
+        ["tap", "Close", "right"],
+        ["swipe", "XP Bar Right", "XP Bar Left", "right"],
+
+        ["swipe", "XP Bar Right", "XP Bar Left", "left"],
+
+        ["loop"],
+        ["load"]
+    ]
+}

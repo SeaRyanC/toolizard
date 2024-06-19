@@ -45,9 +45,70 @@
       "Close": {
         "x": 94,
         "y": 27
+      },
+      "Send Gift": {
+        "x": 81,
+        "y": 45
+      },
+      "First Gift": {
+        "x": 96,
+        "y": 96
+      },
+      "Send": {
+        "x": 96,
+        "y": 40
       }
     },
-    "right": {}
+    "right": {
+      "Trade": {
+        "x": 188,
+        "y": 46
+      },
+      "First Pokemon": {
+        "x": 153,
+        "y": 99
+      },
+      "Next": {
+        "x": 173,
+        "y": 40
+      },
+      "Confirm": {
+        "x": 152,
+        "y": 77
+      },
+      "Close": {
+        "x": 173,
+        "y": 29
+      },
+      "Gift Box": {
+        "x": 175,
+        "y": 72
+      },
+      "XP Bar Right": {
+        "x": 195,
+        "y": 60
+      },
+      "XP Bar Left": {
+        "x": 153,
+        "y": 60
+      },
+      "Open Gift": {
+        "x": 173,
+        "y": 37
+      },
+      "Send Gift": {
+        "x": 160,
+        "y": 45
+      },
+      "First Gift": {
+        "x": 172,
+        "y": 95
+      },
+      "Send": {
+        "x": 172,
+        "y": 37
+      }
+    }
   },
   "_filename": null
 }

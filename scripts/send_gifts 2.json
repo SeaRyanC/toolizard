@@ -1,0 +1,30 @@
+{
+    "name": "Send Gifts (2)",
+    "initialState": "Friend profile screen, sorted by 'Can receive gift'",
+    "devices": 2,
+    "iterations": [25, 5],
+    "steps": [
+        ["mark"],
+        ["tap", "Send Gift", "left"],
+        ["wait", "1500ms", "left"],
+        ["tap", "Close", "left"],
+        ["tap", "Send Gift", "left"],
+        ["wait", "1500ms", "left"],
+        ["tap", "First Gift", "left"],
+        ["tap", "Send", "left"],
+
+        ["tap", "Send Gift", "right"],
+        ["wait", "1500ms", "right"],
+        ["tap", "Close", "right"],
+        ["tap", "Send Gift", "right"],
+        ["wait", "1500ms", "right"],
+        ["tap", "First Gift", "right"],
+        ["tap", "Send", "right"],
+
+        ["swipe", "XP Bar Right", "XP Bar Left", "left"],
+        ["swipe", "XP Bar Right", "XP Bar Left", "right"],
+
+        ["loop"],
+        ["load"]
+    ]
+}

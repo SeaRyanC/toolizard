@@ -2,7 +2,7 @@
     "name": "Open Gifts (At Gift)",
     "initialState": "World Map",
     "devices": 1,
-    "iterations": 20,
+    "iterations": [20],
     "steps": [
         ["mark"],
         ["tap", "Gift Box"],

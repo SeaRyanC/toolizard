@@ -2,7 +2,7 @@ export interface Script {
     name: string;
     initialState: string;
     devices: 1 | 2;
-    iterations?: number;
+    iterations?: number[];
     steps: ReadonlyArray<ScriptStep>;
 }
 

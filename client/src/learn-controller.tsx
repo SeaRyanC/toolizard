@@ -66,6 +66,19 @@ export function LearnController(props: AppProps) {
             }
         });
     }, [props, currentSide, currentTargetName, currentPos]);
+    const goToCurrentPos = useCallback(() => {
+        const command = {
+            x: currentPos.x,
+            y: currentPos.y
+        };
+        fetch("/move-to-possition", {
+            method: "POST",
+            body: JSON.stringify(command),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }, [currentPos]);
 
 
     return <div class="learn-controller">
@@ -75,7 +88,7 @@ export function LearnController(props: AppProps) {
             <div class="learn-target">
                 <div><b>Target:</b> {rows[index][0]}</div>
                 <div><b>Side:</b> {rows[index][1]}</div>
-                <div><b>Current:</b> {currentPos ? `${currentPos.x}, ${currentPos.y}` : "(none)"}</div>
+                <div><b>Current:</b> {currentPos ? <button onClick={goToCurrentPos}>{currentPos.x}, {currentPos.y}</button> : "(none)"}</div>
             </div>
             <div class="horizontal-layout learner-toolbar">
                 <button onClick={prevStep}>Prev</button>
